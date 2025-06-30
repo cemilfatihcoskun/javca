@@ -73,6 +73,12 @@ buck-out/
 .vscode/
 
 # Crashlytics
+
+
+.gitignore
+
+
+
 fabric.properties
 com_crashlytics_export_strings.xml
 
