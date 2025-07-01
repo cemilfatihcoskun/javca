@@ -17,14 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="text"
-        android:text="Name" />
-
-    <Button
-        android:id="@+id/callButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/callButton" />
+        android:inputType="text" />
 
     <Button
         android:id="@+id/logOutButton"

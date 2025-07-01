@@ -24,6 +24,7 @@ class FirebaseSignalingRepository @Inject constructor(
     }
 
     override fun observeRemoteSdp(callId: String, onReceived: (SdpOffer) -> Unit) {
+        Log.d("FirebaseSignalingRepo", "webrtc/$callId/sdp")
         database.getReference("webrtc/$callId/sdp").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshot.getValue(SdpOffer::class.java)?.let(onReceived)

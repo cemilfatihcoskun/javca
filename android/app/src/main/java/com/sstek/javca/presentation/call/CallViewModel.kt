@@ -1,32 +1,29 @@
 package com.sstek.javca.presentation.call
 
-import androidx.lifecycle.LiveData
+
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.sstek.javca.domain.usecase.LogInWithEmailAndPasswordUseCase
-import com.sstek.javca.domain.usecase.UpdateCallRequestUseCase
-import com.sstek.javca.presentation.login.LogInUiState
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import javax.inject.Inject
-
-package com.sstek.javca.presentation.call
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sstek.javca.domain.model.CallStatus
 import com.sstek.javca.domain.model.IceCandidateData
 import com.sstek.javca.domain.model.SdpOffer
-import com.sstek.javca.domain.repository.CallRepository
+import com.sstek.javca.domain.model.SdpType
+import com.sstek.javca.domain.usecase.ObserveCallRequestUseCase
 import com.sstek.javca.domain.usecase.ObserveRemoteIceUseCase
 import com.sstek.javca.domain.usecase.ObserveRemoteSdpUseCase
 import com.sstek.javca.domain.usecase.SendIceCandidateUseCase
 import com.sstek.javca.domain.usecase.SendSdpUseCase
+import com.sstek.javca.domain.usecase.UpdateCallRequestUseCase
+import com.sstek.javca.framework.WebRtcManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import org.webrtc.IceCandidate
+import org.webrtc.SessionDescription
+import org.webrtc.SurfaceViewRenderer
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +33,7 @@ class CallViewModel @Inject constructor(
     private val observeRemoteSdpUseCase: ObserveRemoteSdpUseCase,
     private val observeRemoteIceUseCase: ObserveRemoteIceUseCase,
     private val updateCallStatusUseCase: UpdateCallRequestUseCase,
-    private val callRepository: CallRepository
+    private val observeCallRequestUseCase: ObserveCallRequestUseCase
 ) : ViewModel() {
 
     private val _onRemoteSdp = MutableSharedFlow<SdpOffer>()
@@ -45,45 +42,136 @@ class CallViewModel @Inject constructor(
     private val _onRemoteIce = MutableSharedFlow<IceCandidateData>()
     val onRemoteIce: SharedFlow<IceCandidateData> = _onRemoteIce
 
-    fun sendSdp(callId: String, sdp: SdpOffer) {
-        viewModelScope.launch {
-            sendSdpUseCase(callId, sdp)
-        }
-    }
+    private val _callStatus = MutableLiveData<CallStatus>()
+    val callStatus: MutableLiveData<CallStatus> = _callStatus
 
-    fun sendIceCandidate(callId: String, candidate: IceCandidateData) {
-        viewModelScope.launch {
-            sendIceCandidateUseCase(callId, candidate)
-        }
-    }
+    private lateinit var webRtcManager: WebRtcManager
 
-    suspend fun observeRemoteSdp(callId: String) {
-        observeRemoteSdpUseCase(callId) { sdp ->
-            viewModelScope.launch {
-                _onRemoteSdp.emit(sdp)
+    fun initWebRtcManager(callId: String, context: Context, localView: SurfaceViewRenderer, remoteView: SurfaceViewRenderer) {
+        Log.d("CallViewModel", "initWebRtcManager() called with callId: $callId")
+        webRtcManager = WebRtcManager(
+            context,
+            callId,
+            onIceCandidate = { candidate ->
+                viewModelScope.launch {
+                    val candidateData = candidate.toIceCandidateData()
+                    sendIceCandidateUseCase(callId, candidateData)
+                }
+            },
+            onSdpCreated = { sdp ->
+                viewModelScope.launch {
+                    sendSdpUseCase(
+                        callId,
+                        SdpOffer(
+                            type = sdp.type.toSdpType(),
+                            sdp = sdp.description
+                        )
+                    )
+                }
+            },
+            onCallEnded = {
+                _callStatus.postValue(CallStatus.ENDED)
+            }
+        )
+        webRtcManager.init(localView, remoteView)
+
+
+        viewModelScope.launch {
+            observeRemoteSdpUseCase(callId) { sdpOffer ->
+                val sdp = SessionDescription(SessionDescription.Type.fromCanonicalForm(sdpOffer.type.toString()), sdpOffer.sdp)
+                webRtcManager.setRemoteDescription(sdp) {
+                    if (sdp.type == SessionDescription.Type.OFFER) {
+                        webRtcManager.createAnswer()
+                    }
+                }
+            }
+        }
+
+
+        viewModelScope.launch {
+            observeRemoteIceUseCase(callId) { candidateData ->
+                val iceCandidate = candidateData.toIceCandidate()
+                webRtcManager.addRemoteIceCandidate(iceCandidate)
+            }
+        }
+
+        viewModelScope.launch {
+            observeCallRequestUseCase(callId) { callId2, request ->
+                Log.d("CallViewModel", "CallRequest updated: $request")
+
+                _callStatus.value = request.status
+
+                if (request.status == CallStatus.ENDED) {
+                    endCall(callId)
+                }
+
             }
         }
     }
 
-    suspend fun observeRemoteIceCandidates(callId: String) {
-        observeRemoteIceUseCase(callId) { candidate ->
-            viewModelScope.launch {
-                _onRemoteIce.emit(candidate)
-            }
-        }
+    fun createOffer() {
+        webRtcManager.createOffer()
     }
 
-    fun updateCallStatus(callId: String, status: CallStatus) {
-        viewModelScope.launch {
-            updateCallStatusUseCase(callId, status)
-        }
+    fun createAnswer() {
+        webRtcManager.createAnswer()
     }
 
     fun endCall(callId: String) {
-        updateCallStatus(callId, CallStatus.ENDED)
+        webRtcManager.close()
+        viewModelScope.launch {
+            updateCallStatusUseCase(callId, CallStatus.ENDED)
+        }
+
     }
 
     fun rejectCall(callId: String) {
-        updateCallStatus(callId, CallStatus.REJECTED)
+        viewModelScope.launch {
+            updateCallStatusUseCase(callId, CallStatus.REJECTED)
+        }
+    }
+
+    fun toggleAudio() {
+        webRtcManager.toggleAudio()
+    }
+
+    fun toggleVideo() {
+        webRtcManager.toggleVideo()
+    }
+
+    fun switchCamera() {
+        webRtcManager.switchCamera()
+    }
+
+    fun swapSurfaceViewRenderers() {
+        webRtcManager.swapSurfaceViewRenderers()
     }
 }
+
+fun IceCandidate.toIceCandidateData() = IceCandidateData(
+    sdpMid = this.sdpMid ?: "",
+    sdpMLineIndex = this.sdpMLineIndex,
+    candidate = this.sdp
+)
+
+fun IceCandidateData.toIceCandidate() = IceCandidate(
+    this.sdpMid,
+    this.sdpMLineIndex,
+    this.candidate
+)
+
+fun SdpType.toSessionDescriptionType(): SessionDescription.Type = when (this) {
+    SdpType.OFFER -> SessionDescription.Type.OFFER
+    SdpType.ANSWER -> SessionDescription.Type.ANSWER
+    SdpType.PRANSWER -> SessionDescription.Type.PRANSWER
+    SdpType.ROLLBACK -> SessionDescription.Type.ROLLBACK
+}
+
+fun SessionDescription.Type.toSdpType(): SdpType = when (this) {
+    SessionDescription.Type.OFFER -> SdpType.OFFER
+    SessionDescription.Type.ANSWER -> SdpType.ANSWER
+    SessionDescription.Type.PRANSWER -> SdpType.PRANSWER
+    SessionDescription.Type.ROLLBACK -> SdpType.ROLLBACK
+    else -> throw IllegalArgumentException("Unsupported SDP type")
+}
+

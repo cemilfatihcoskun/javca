@@ -5,3 +5,4 @@ data class IceCandidateData(
     val sdpMLineIndex: Int = 0,
     val candidate: String = ""
 )
+

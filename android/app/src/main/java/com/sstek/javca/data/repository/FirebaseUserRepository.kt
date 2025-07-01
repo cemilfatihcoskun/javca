@@ -28,7 +28,6 @@ class FirebaseUserRepository @Inject constructor(
                 if (uid != null && username != null && email != null) {
                     val user = User(uid = uid, username = username, email = email)
                     users.add(user)
-                    Log.d("FirebaseUserRepo", "getAllUsers() $user")
                 }
             }
             users

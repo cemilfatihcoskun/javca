@@ -1,5 +1,7 @@
 package com.sstek.javca.domain.model
 
+import org.webrtc.SessionDescription
+
 enum class SdpType {
-    OFFER, ANSWER
+    OFFER, ANSWER, PRANSWER, ROLLBACK
 }

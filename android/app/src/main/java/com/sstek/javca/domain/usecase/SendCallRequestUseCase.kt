@@ -8,7 +8,7 @@ import javax.inject.Inject
 class SendCallRequestUseCase @Inject constructor(
     private val repository: CallRepository
 ) {
-    suspend operator fun invoke(callRequest: CallRequest): CallStatus {
+    suspend operator fun invoke(callRequest: CallRequest): Pair<String?, CallStatus> {
         return repository.sendCallRequest(callRequest)
     }
 }

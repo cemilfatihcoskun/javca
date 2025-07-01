@@ -1,5 +1,6 @@
 package com.sstek.javca.presentation.main
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,6 +15,7 @@ import com.sstek.javca.domain.usecase.ReloadAuthUseCase
 import com.sstek.javca.domain.usecase.SendCallRequestUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.Clock
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,29 +64,44 @@ class MainViewModel @Inject constructor(
         }
     }
 
-
-    fun startCall(callerId: String, calleeId: String) {
+    fun startCall(callerId: String, calleeId: String, onCallStarted: (String) -> Unit) {
         val caller: User? = getCurrentUserUseCase()
 
-        if (caller == null) {
-            return
-        }
+        if (caller == null) return
 
         val callRequest = CallRequest(
             callerId = caller.uid,
             calleeId = calleeId,
+            timestamp = System.currentTimeMillis()
         )
 
         viewModelScope.launch {
             _callState.value = CallUiState.Loading
-            val success = sendCallRequestUseCase(callRequest)
-
-            if (success == CallStatus.TIMEOUT) {
-                _callState.value = CallUiState.Error("Aradığın kişi şu anda telefona cevap vermiyor. İstersen sonra dene.")
+            val (callId, status) = sendCallRequestUseCase(callRequest)
+            when (status) {
+                CallStatus.TIMEOUT -> {
+                    _callState.value = CallUiState.Error("Cevap yok")
+                }
+                CallStatus.REJECTED -> {
+                    Log.d("MainViewModel", "CallStatus rejected")
+                    _callState.value = CallUiState.Error("Arama reddedildi")
+                }
+                CallStatus.ACCEPTED -> {
+                    Log.d("MainViewModel", "CallStatus Accepted")
+                    if (callId != null) {
+                        _callState.value = CallUiState.Success("Çağrı başlatıldı")
+                        onCallStarted(callId)
+                    } else {
+                        _callState.value = CallUiState.Error("Çağrı ID alınamadı.")
+                    }
+                }
+                else -> {
+                    _callState.value = CallUiState.Error("Bilinmeyen çağrı durumu.")
+                }
             }
-
         }
     }
+
 }
 
 sealed class CallUiState {

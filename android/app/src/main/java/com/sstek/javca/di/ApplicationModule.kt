@@ -7,10 +7,12 @@ import com.sstek.javca.domain.repository.AuthRepository
 import com.sstek.javca.data.repository.FirebaseAuthRepository
 import com.sstek.javca.data.repository.FirebaseCallObserverRepository
 import com.sstek.javca.data.repository.FirebaseCallRepository
+import com.sstek.javca.data.repository.FirebaseSignalingRepository
 import com.sstek.javca.data.repository.FirebaseUserRepository
 import com.sstek.javca.data.source.FakeAuthDataSource
 import com.sstek.javca.domain.repository.CallObserverRepository
 import com.sstek.javca.domain.repository.CallRepository
+import com.sstek.javca.domain.repository.SignalingRepository
 import com.sstek.javca.domain.repository.UserRepository
 import com.sstek.javca.domain.usecase.LogInWithEmailAndPasswordUseCase
 import dagger.Module
@@ -72,5 +74,11 @@ object ApplicationModule {
     @Singleton
     fun provideFirebaseUserRepository(db: FirebaseDatabase): UserRepository {
         return FirebaseUserRepository(db)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseSignalingRepository(db: FirebaseDatabase): SignalingRepository {
+        return FirebaseSignalingRepository(db)
     }
 }

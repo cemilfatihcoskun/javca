@@ -18,30 +18,37 @@ class FirebaseCallRepository @Inject constructor(
 ) : CallRepository {
 
     // TODO(Edit callstatuses')
-    override suspend fun sendCallRequest(callRequest: CallRequest): CallStatus {
+    override suspend fun sendCallRequest(callRequest: CallRequest): Pair<String?, CallStatus> {
         return try {
             val callRef = database.getReference("calls").push()
             val callId = callRef.key
             val callData = callRequest.copy()
 
             callRef.setValue(callData).await()
-            database.getReference("user/calls/${callRequest.callerId}/$callId").setValue(true)
-            database.getReference("user/calls/${callRequest.calleeId}/$callId").setValue(true)
+            database.getReference("userCalls/${callRequest.callerId}/$callId").setValue(true).await()
+            database.getReference("userCalls/${callRequest.calleeId}/$callId").setValue(true).await()
 
             delay(Config.TIMEOUT_MILLISECONDS)
+
             val statusSnapshot = callRef.child("status").get().await()
             val status = statusSnapshot.getValue(String::class.java)
 
-            if (status == "PENDING") {
-                callRef.child("status").setValue("TIMEOUT").await()
-                return CallStatus.TIMEOUT
+            return when (status) {
+                "PENDING" -> {
+                    callRef.child("status").setValue("TIMEOUT").await()
+                    Pair(callId, CallStatus.TIMEOUT)
+                }
+                "REJECTED" -> Pair(callId, CallStatus.REJECTED)
+                "ACCEPTED" -> Pair(callId, CallStatus.ACCEPTED)
+                "TIMEOUT" -> Pair(callId, CallStatus.TIMEOUT)
+                else -> Pair(callId, CallStatus.PENDING)
             }
-            return CallStatus.ACCEPTED
         } catch (e: Exception) {
             Log.e("FirebaseCallRepository", "sendCallRequest() error ${e.message}")
-            CallStatus.PENDING
+            Pair(null, CallStatus.PENDING)
         }
     }
+
 
     override suspend fun updateCallStatus(callId: String, status: CallStatus) {
         try {
