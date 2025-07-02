@@ -81,6 +81,8 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.56.2")
     kapt("com.google.dagger:hilt-compiler:2.56.2")
 
+    implementation("com.guolindev.permissionx:permissionx:1.8.1")
+
     implementation("androidx.activity:activity-ktx:1.10.1")
     runtimeOnly("androidx.fragment:fragment-ktx:1.8.8")
 

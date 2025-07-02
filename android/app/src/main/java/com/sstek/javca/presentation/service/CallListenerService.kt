@@ -19,6 +19,7 @@ import com.sstek.javca.domain.model.User
 import com.sstek.javca.domain.repository.AuthRepository
 import com.sstek.javca.domain.repository.CallObserverRepository
 import com.sstek.javca.domain.repository.CallRepository
+import com.sstek.javca.domain.usecase.GetCurrentUserUseCase
 import com.sstek.javca.domain.usecase.GetUserByIdUseCase
 import com.sstek.javca.domain.usecase.UpdateCallRequestUseCase
 import com.sstek.javca.presentation.call.CallActivity
@@ -52,6 +53,9 @@ class CallListenerService : Service() {
     @Inject
     lateinit var getUserByIdUseCase: GetUserByIdUseCase
 
+    @Inject
+    lateinit var getCurrentUserUseCase: GetCurrentUserUseCase
+
 
     private var currentCallId: String? = null
     private var ringtone: Ringtone? = null
@@ -67,7 +71,7 @@ class CallListenerService : Service() {
         super.onCreate()
 
         //TODO(It can be problematic without null check)
-        currentUser = authRepository.getCurrentUser()!!
+        currentUser = getCurrentUserUseCase()!!
 
         Log.d("CallListenerService", "onCreate() userId = ${currentUser.uid}")
         callObserverRepository.observeIncomingCalls(currentUser.uid) { callId, callRequest ->
@@ -93,7 +97,7 @@ class CallListenerService : Service() {
             }
 
             if (callRequest.status == CallStatus.TIMEOUT && callRequest.callerId != currentUser.uid) {
-                // TODO(Server time kullanmalı)
+                // DONE TODO(Server time kullanmalı)
                 if (SERVICE_START_TIME < callRequest.timestamp) {
                     showTimeoutNotification(callRequest)
                 }
@@ -124,8 +128,7 @@ class CallListenerService : Service() {
 
             val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-            // TODO(Tap intent ekle)
-            /*
+            // DONE TODO(Tap intent ekle)
             val tapIntent = Intent(this@CallListenerService, CallActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 putExtra("callId", true)
@@ -134,8 +137,6 @@ class CallListenerService : Service() {
             val tapPendingIntent = PendingIntent.getActivity(
                 this@CallListenerService, 0, tapIntent, PendingIntent.FLAG_IMMUTABLE
             )
-             */
-
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val channel = NotificationChannel(
@@ -150,15 +151,13 @@ class CallListenerService : Service() {
                 .setContentTitle("Gelen Arama")
                 .setContentText(message)
                 .setSmallIcon(R.drawable.apple_touch_icon)
-                //.setContentIntent(tapPendingIntent)
+                .setContentIntent(tapPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setAutoCancel(true)
 
             manager.notify(TIMEOUT_NOTIFICATION_ID, builder.build())
         }
-
-
     }
 
     @SuppressLint("ForegroundServiceType")
@@ -170,13 +169,16 @@ class CallListenerService : Service() {
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
 
+        /*
         val tapIntent = Intent(this, CallActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra("callId", currentCallId)
             putExtra("callerId", message)
         }
         val tapPendingIntent = PendingIntent.getActivity(
             this, 0, tapIntent, PendingIntent.FLAG_IMMUTABLE
         )
+         */
 
         val declineIntent = Intent(this, CallListenerService::class.java).apply {
             setAction("ACTION_DECLINE_CALL")
@@ -210,7 +212,7 @@ class CallListenerService : Service() {
             .setContentTitle("Gelen Arama")
             .setContentText(message)
             .setSmallIcon(R.drawable.apple_touch_icon)
-            .setContentIntent(tapPendingIntent)
+            //.setContentIntent(tapPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_CALL)
             .setFullScreenIntent(fullScreenPendingIntent, true)
@@ -264,13 +266,11 @@ class CallListenerService : Service() {
         }
     }
 
-
-
     private fun playRingtone() {
         try {
             val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
             ringtone = RingtoneManager.getRingtone(applicationContext, uri)
-            //ringtone?.play()
+            ringtone?.play()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -287,6 +287,8 @@ class CallListenerService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        stopRingtone()
+        cancelNotification()
         callObserverRepository.removeListener(currentUser.uid)
     }
 

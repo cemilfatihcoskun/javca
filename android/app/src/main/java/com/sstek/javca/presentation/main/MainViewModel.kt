@@ -29,20 +29,19 @@ class MainViewModel @Inject constructor(
     private val _username = MutableLiveData<String?>()
     val username: LiveData<String?> = _username
 
-    private val _callState = MutableLiveData<CallUiState>()
-    val callState: LiveData<CallUiState> get() = _callState
-
     private val _userList = MutableLiveData<List<User>>()
     val userList: LiveData<List<User>> = _userList
 
+    private val currentCallId: String? = null
+
     fun loadUsers() {
         viewModelScope.launch {
-            val users = getAllUsersUseCase()
-            _userList.value = users
+            getAllUsersUseCase { users ->
+                Log.d("MainViewModel", "loadUsers called")
+                _userList.postValue(users)
+            }
         }
     }
-
-    private val currentCallId: String? = null
 
     fun checkUser() {
         val user = getCurrentUserUseCase()
@@ -69,44 +68,17 @@ class MainViewModel @Inject constructor(
 
         if (caller == null) return
 
+        // DONE TODO(Sunucu zamanını kullan)
         val callRequest = CallRequest(
             callerId = caller.uid,
             calleeId = calleeId,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            status = CallStatus.PENDING
         )
 
         viewModelScope.launch {
-            _callState.value = CallUiState.Loading
             val (callId, status) = sendCallRequestUseCase(callRequest)
-            when (status) {
-                CallStatus.TIMEOUT -> {
-                    _callState.value = CallUiState.Error("Cevap yok")
-                }
-                CallStatus.REJECTED -> {
-                    Log.d("MainViewModel", "CallStatus rejected")
-                    _callState.value = CallUiState.Error("Arama reddedildi")
-                }
-                CallStatus.ACCEPTED -> {
-                    Log.d("MainViewModel", "CallStatus Accepted")
-                    if (callId != null) {
-                        _callState.value = CallUiState.Success("Çağrı başlatıldı")
-                        onCallStarted(callId)
-                    } else {
-                        _callState.value = CallUiState.Error("Çağrı ID alınamadı.")
-                    }
-                }
-                else -> {
-                    _callState.value = CallUiState.Error("Bilinmeyen çağrı durumu.")
-                }
-            }
+            onCallStarted(callId.toString())
         }
     }
-
-}
-
-sealed class CallUiState {
-    object Idle: CallUiState()
-    object Loading: CallUiState()
-    data class Success(val message: String): CallUiState()
-    data class Error(val message: String): CallUiState()
 }

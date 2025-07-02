@@ -1,6 +1,5 @@
 package com.sstek.javca.domain.usecase
 
-import com.sstek.javca.data.repository.FirebaseUserRepository
 import com.sstek.javca.domain.repository.UserRepository
 import javax.inject.Inject
 

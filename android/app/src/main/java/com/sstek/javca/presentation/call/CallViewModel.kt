@@ -118,11 +118,14 @@ class CallViewModel @Inject constructor(
     }
 
     fun endCall(callId: String) {
-        webRtcManager.close()
+        cleanWebRtc()
         viewModelScope.launch {
             updateCallStatusUseCase(callId, CallStatus.ENDED)
         }
+    }
 
+    fun cleanWebRtc() {
+        webRtcManager.close()
     }
 
     fun rejectCall(callId: String) {
@@ -131,12 +134,12 @@ class CallViewModel @Inject constructor(
         }
     }
 
-    fun toggleAudio() {
-        webRtcManager.toggleAudio()
+    fun toggleAudio(): Boolean {
+        return webRtcManager.toggleAudio()
     }
 
-    fun toggleVideo() {
-        webRtcManager.toggleVideo()
+    fun toggleVideo(): Boolean {
+        return webRtcManager.toggleVideo()
     }
 
     fun switchCamera() {

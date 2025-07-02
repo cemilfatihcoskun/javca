@@ -46,7 +46,7 @@ class WebRtcManager(
     private lateinit var eglBase: EglBase
 
     private var isSurfacesSwapped: Boolean = false
-    private var isClosed: Boolean = true
+    private var isClosed: Boolean = false
 
 
 
@@ -215,12 +215,28 @@ class WebRtcManager(
         try {
             peerConnection?.close()
             peerConnection = null
+
             videoCapturer?.stopCapture()
             videoCapturer?.dispose()
+            videoCapturer = null
+
+            localVideoTrack?.setEnabled(false)
+            localAudioTrack?.setEnabled(false)
+            remoteVideoTrack?.setEnabled(false)
+
+            localVideoTrack?.removeSink(localSurfaceView)
+            remoteVideoTrack?.removeSink(remoteSurfaceView)
+
             localVideoTrack = null
             localAudioTrack = null
+            remoteVideoTrack = null
+
+            localSurfaceView?.release()
             localSurfaceView = null
+
+            remoteSurfaceView?.release()
             remoteSurfaceView = null
+
             eglBase.release()
         } catch (e: Exception) {
             Log.e("WebRtcManager", "${e.message}")
@@ -238,18 +254,23 @@ class WebRtcManager(
         return null
     }
 
-    fun toggleAudio() {
+    fun toggleAudio(): Boolean {
         localAudioTrack?.let {
-            it.setEnabled(!it.enabled())
+            val reverse = !it.enabled()
+            it.setEnabled(reverse)
+            return reverse
         }
+        return false
     }
 
-    fun toggleVideo() {
+    fun toggleVideo(): Boolean {
         toggleAudio()
         localVideoTrack?.let {
-            val enabled = it.enabled()
-            it.setEnabled(!enabled)
+            val reverse = !it.enabled()
+            it.setEnabled(reverse)
+            return reverse
         }
+        return false
     }
 
     fun switchCamera() {

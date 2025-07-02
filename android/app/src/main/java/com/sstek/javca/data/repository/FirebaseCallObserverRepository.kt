@@ -7,7 +7,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.sstek.javca.domain.model.CallRequest
-import com.sstek.javca.domain.model.CallStatus
 import com.sstek.javca.domain.repository.CallObserverRepository
 import javax.inject.Inject
 

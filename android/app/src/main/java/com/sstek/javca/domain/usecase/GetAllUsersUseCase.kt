@@ -7,7 +7,5 @@ import javax.inject.Inject
 class GetAllUsersUseCase @Inject constructor(
     val userRepository: UserRepository
 ) {
-    suspend operator fun invoke(): List<User> {
-        return userRepository.getAllUsers()
-    }
+    suspend operator fun invoke(onUsersUpdated: (List<User>) -> Unit) = userRepository.getAllUsers(onUsersUpdated)
 }

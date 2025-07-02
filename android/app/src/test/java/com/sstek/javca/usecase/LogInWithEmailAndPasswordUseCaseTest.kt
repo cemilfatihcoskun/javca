@@ -1,6 +1,7 @@
 package com.sstek.javca.usecase
 
 import com.google.firebase.auth.FirebaseUser
+import com.sstek.javca.domain.model.User
 import com.sstek.javca.domain.repository.AuthRepository
 import com.sstek.javca.domain.usecase.LogInWithEmailAndPasswordUseCase
 import junit.framework.TestCase.assertNull
@@ -29,7 +30,7 @@ class LogInWithEmailAndPasswordUseCaseTest {
 
     @Test
     fun `given credentials are valid then return user`() = runBlocking {
-        val mockUser: FirebaseUser = mock()
+        val mockUser: User = mock()
         `when`(authRepository.loginWithEmailAndPassword(email, password))
             .thenReturn(mockUser)
 

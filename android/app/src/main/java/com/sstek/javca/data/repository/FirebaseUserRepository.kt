@@ -1,11 +1,12 @@
 package com.sstek.javca.data.repository
 
 import android.util.Log
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.sstek.javca.domain.model.User
 import com.sstek.javca.domain.repository.UserRepository
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -14,27 +15,25 @@ class FirebaseUserRepository @Inject constructor(
     val database: FirebaseDatabase
 ) : UserRepository {
 
-    //TODO(Listenerlı sürekli dinleyecek şekilde yap)
-    override suspend fun getAllUsers(): List<User> {
-        return try {
-            val snapshot = database.getReference("users").get().await()
+    //DONE TODO(Listenerlı sürekli dinleyecek şekilde yap)
 
-            val users = mutableListOf<User>()
-            for (userSnapshot in snapshot.children) {
-                val uid = userSnapshot.child("uid").getValue(String::class.java)
-                val username = userSnapshot.child("username").getValue(String::class.java)
-                val email = userSnapshot.child("email").getValue(String::class.java)
-
-                if (uid != null && username != null && email != null) {
-                    val user = User(uid = uid, username = username, email = email)
-                    users.add(user)
+    override fun getAllUsers(onUsersUpdated: (List<User>) -> Unit) {
+        database.getReference("users").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val users = mutableListOf<User>()
+                for (childSnapshot in snapshot.children) {
+                    val user = childSnapshot.getValue(User::class.java)
+                    if (user != null) {
+                        users.add(user)
+                    }
                 }
+                onUsersUpdated(users)
             }
-            users
-        } catch (e: Exception) {
-            Log.d("FirebaseUserRepo", "getAllUsers() ${e.message}")
-            emptyList()
-        }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseUserRepository", "getUsersRealtime cancelled: $error")
+            }
+        })
     }
 
     override suspend fun getUserById(uid: String): User? = suspendCoroutine { cont ->

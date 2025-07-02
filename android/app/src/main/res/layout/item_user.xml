@@ -11,22 +11,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="12dp"
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/usernameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Kullanıcı Adı"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <ImageButton
+            android:id="@+id/toggleFavoriteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@android:drawable/btn_star_big_off"
+            android:tint="?attr/colorPrimary"
+            android:visibility="invisible" />
 
         <ImageButton
             android:id="@+id/callButton"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:contentDescription="Ara"
-            android:src="@drawable/ic_baseline_call_end_24" />
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@android:drawable/stat_sys_phone_call"
+            android:tint="?attr/colorPrimary" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

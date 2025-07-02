@@ -1,16 +1,12 @@
 package com.sstek.javca.data.repository
 
 import android.util.Log
-import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
-import com.sstek.javca.data.model.CallRequestDto
-import com.sstek.javca.domain.model.CallRequest
 import com.sstek.javca.domain.model.User
 import com.sstek.javca.domain.repository.AuthRepository
-import com.sstek.javca.domain.usecase.GetCurrentUserUseCase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 

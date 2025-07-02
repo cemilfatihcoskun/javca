@@ -5,26 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/welcomeTextView"
-        android:textSize="18sp"
-        android:text="@string/welcomeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <EditText
-        android:id="@+id/targetUsernameEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="text" />
-
-    <Button
-        android:id="@+id/logOutButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/logOutButton" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/userListRecyclerView"
         android:layout_width="match_parent"

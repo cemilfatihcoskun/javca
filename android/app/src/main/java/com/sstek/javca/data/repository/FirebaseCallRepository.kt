@@ -5,11 +5,9 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.sstek.javca.Config
 import com.sstek.javca.domain.model.CallRequest
 import com.sstek.javca.domain.model.CallStatus
 import com.sstek.javca.domain.repository.CallRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -28,14 +26,13 @@ class FirebaseCallRepository @Inject constructor(
             database.getReference("userCalls/${callRequest.callerId}/$callId").setValue(true).await()
             database.getReference("userCalls/${callRequest.calleeId}/$callId").setValue(true).await()
 
-            delay(Config.TIMEOUT_MILLISECONDS)
 
             val statusSnapshot = callRef.child("status").get().await()
             val status = statusSnapshot.getValue(String::class.java)
 
             return when (status) {
                 "PENDING" -> {
-                    callRef.child("status").setValue("TIMEOUT").await()
+                    //callRef.child("status").setValue("TIMEOUT").await()
                     Pair(callId, CallStatus.TIMEOUT)
                 }
                 "REJECTED" -> Pair(callId, CallStatus.REJECTED)

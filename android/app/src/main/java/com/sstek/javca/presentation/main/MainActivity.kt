@@ -33,11 +33,16 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var adapter: UserAdapter
 
+    private lateinit var callListenerService: Intent
+
+    private var currentUserName: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.root.requestFocus()
 
         val REQUEST_CODE = 6666
         if (!Settings.canDrawOverlays(applicationContext)) {
@@ -50,30 +55,19 @@ class MainActivity : AppCompatActivity() {
         //viewModel.reloadAuth()
         //viewModel.checkUser()
 
-        //TODO(Register sonrası logout oluyor tekrar login yapmak gerekiyor)
+        //DONE TODO(Register sonrası logout oluyor tekrar login yapmak gerekiyor)
+        callListenerService = Intent(this, CallListenerService::class.java)
 
+        // TODO(bu arızayı hallet bir nedenden dolayı startForegroundService çalışmıyor)
         /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(Intent(this, CallListenerService::class.java))
+            startForegroundService(callListenerService)
         } else {
-            startService(Intent(this, CallListenerService::class.java))
+            startService(callListenerService)
         }
-         */
-        startService(Intent(this, CallListenerService::class.java))
+        */
 
-        binding.targetUsernameEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s != null) {
-                    adapter.filter(s.toString())
-                }
-            }
-        })
+        startService(callListenerService)
 
         binding.userListRecyclerView.layoutManager = LinearLayoutManager(this)
         adapter = UserAdapter(
@@ -82,6 +76,7 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.make(binding.root, "${selectedUser.username} aranıyor.", Snackbar.LENGTH_SHORT).show()
                 viewModel.startCall(viewModel.getCurrentUser()?.uid.toString(), selectedUser.uid.toString(), { callId ->
                     Log.d("MainActivity", "contact called onCallClick")
+
                     val intent = Intent(this, CallActivity::class.java).apply {
                         putExtra("callId", callId)
                         putExtra("isCaller", true)
@@ -107,38 +102,69 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, LogInActivity::class.java))
                 finish()
             } else {
-                val welcomeMessage = getString(R.string.welcomeTextView)
-                binding.welcomeTextView.text = "$welcomeMessage, $name!"
-                binding.welcomeTextView.animate()
-                    .rotationBy(360f)
-                    .setDuration(1000)
-                    .setInterpolator(LinearInterpolator())
-                    .start()
-
-                binding.logOutButton.setOnClickListener {
-                    viewModel.logOut()
-                    val intent = Intent(this, LogInActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                }
+                currentUserName = name
             }
         }
 
         viewModel.checkUser()
-
-        viewModel.callState.observe(this) { state ->
-            when (state) {
-                is CallUiState.Loading -> Snackbar.make(binding.root, "Loading", Snackbar.LENGTH_SHORT).show()
-                is CallUiState.Success -> Snackbar.make(binding.root, "Success", Snackbar.LENGTH_SHORT).show()
-                is CallUiState.Error -> Snackbar.make(binding.root, "Error", Snackbar.LENGTH_SHORT).show()
-                else -> Unit
-            }
-        }
-
-
     }
 
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
 
+        val searchItem = menu?.findItem(R.id.action_search)
+        val searchView = searchItem?.actionView as? androidx.appcompat.widget.SearchView
+
+        searchView?.queryHint = "Kullanıcı ara..."
+
+        searchView?.apply {
+            queryHint = "Kullanıcı ara..."
+
+            setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    query?.let { adapter.filter(it) }
+                    clearFocus()
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    adapter.filter(newText ?: "")
+                    return true
+                }
+            })
+        }
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_profile -> {
+                showProfileDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showProfileDialog() {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("JAVCA")
+        builder.setMessage("Hoşgeldiniz $currentUserName. Oturumunuzu kapatmak mı istiyorsunuz?")
+        builder.setPositiveButton("Evet") { _, _ ->
+            viewModel.logOut()
+            val intent = Intent(this, LogInActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
+        builder.setNegativeButton("Hayır", null)
+        builder.show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopService(callListenerService)
+    }
 }
 

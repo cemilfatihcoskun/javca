@@ -1,7 +1,5 @@
 package com.sstek.javca.domain.model
 
-import com.sstek.javca.data.model.CallRequestDto
-
 data class CallRequest(
     val callerId: String = "",
     val calleeId: String = "",
