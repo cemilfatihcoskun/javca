@@ -19,7 +19,7 @@ out/
 # Gradle files
 .gradle/
 build/
-gradle/
+#gradle/
 !gradle-wrapper.jar
 gradle-app.setting
 
@@ -46,7 +46,7 @@ obj/
 *.keystore
 
 # Google Services (e.g. APIs or Firebase)
-google-services.json
+#google-services.json
 
 # Fastlane
 fastlane/report.xml

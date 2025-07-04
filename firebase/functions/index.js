@@ -55,6 +55,7 @@ function writeUserData(userId, name, email, imageUrl) {
 
 admin.initializeApp();
 
+// Eğer tanımlanan zaman aralığına kadar cevap oluşmazsa PENDING -> TIMEOUT oluyor
 exports.checkCallTimeout = functions.database
   .ref('/calls/{callId}/status')
   .onCreate(async (snapshot, context) => {
@@ -92,6 +93,59 @@ exports.checkCallTimeout = functions.database
   });
 
 
+// Çağrı sonuç oluşturduğunda TIMEOUT, ENDED, REJECTED çağrıyla ilgili webrtc tablosu, eğer varsa, siliniyor
+exports.cleanUpWebrtcData = functions.database
+  .ref('/calls/{callId}/status')
+  .onUpdate(async (change, context) => {
+    const after = change.after.val();
+    const callId = context.params.callId;
 
+    const shouldCleanup = ["TIMEOUT", "ENDED", "REJECTED"].includes(after);
+    if (!shouldCleanup) return null;
+
+    const webrtcRef = admin.database().ref(`/webrtc/${callId}`);
+
+    try {
+      const snapshot = await webrtcRef.once("value");
+
+      if (snapshot.exists()) {
+        console.log(`Deleting webrtc/${callId} because call ended with status: ${after}`);
+        await webrtcRef.remove();
+      } else {
+        console.log(`No webrtc data found for call ${callId}, nothing to delete.`);
+      }
+
+    } catch (error) {
+      console.error(`Error checking/removing webrtc/${callId}:`, error);
+    }
+
+    return null;
+  });
+  
+
+// Auth modülüyle yeni bir kullanıcı eklendiğinde realtime database e de ekleniyor.
+exports.addUserToDatabase = functions.auth.user().onCreate(async (user) => {
+  const uid = user.uid;
+  const email = user.email || "";
+  const displayName = user.displayName || "";
+  //const photoURL = user.photoURL || "";
+
+  const userData = {
+    uid: uid,
+    email: email,
+    name: displayName,
+    //photoURL: photoURL,
+    //createdAt: admin.database.ServerValue.TIMESTAMP,
+  };
+
+  try {
+    await admin.database().ref(`users/${uid}`).set(userData);
+    console.log(`User ${uid} added to Realtime Database`);
+  } catch (error) {
+    console.error(`Failed to add user ${uid} to database:`, error);
+  }
+
+  return null;
+});
 
 

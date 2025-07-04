@@ -20,7 +20,7 @@
     <application
         android:networkSecurityConfig="@xml/network_security_config"
 
-        android:name=".MyApplication"
+        android:name=".core.MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -31,7 +31,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".presentation.launcher.LauncherActivity"
+            android:name=".launcher.presentation.LauncherActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,11 +39,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".presentation.main.MainActivity" />
-        <activity android:name=".presentation.register.RegisterActivity" />
-        <activity android:name=".presentation.login.LogInActivity" />
+        <activity android:name=".main.presentation.MainActivity" />
+        <activity android:name=".auth.presentation.register.RegisterActivity" />
+        <activity android:name=".auth.presentation.login.LogInActivity" />
         <activity
-            android:name=".presentation.call.CallActivity"
+            android:name=".call.presentation.CallActivity"
             android:showOnLockScreen="true"
             android:turnScreenOn="true"
             android:excludeFromRecents="true"
@@ -52,7 +52,7 @@
         <!-- android:screenOrientation="portrait" !-->
 
         <service
-            android:name=".presentation.service.CallListenerService"
+            android:name=".framework.CallListenerService"
             android:exported="false" />
     </application>
 

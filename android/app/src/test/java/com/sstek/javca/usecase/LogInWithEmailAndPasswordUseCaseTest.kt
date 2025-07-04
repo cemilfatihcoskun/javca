@@ -1,16 +1,14 @@
 package com.sstek.javca.usecase
 
-import com.google.firebase.auth.FirebaseUser
-import com.sstek.javca.domain.model.User
-import com.sstek.javca.domain.repository.AuthRepository
-import com.sstek.javca.domain.usecase.LogInWithEmailAndPasswordUseCase
+import com.sstek.javca.user.domain.entity.User
+import com.sstek.javca.auth.domain.repository.AuthRepository
+import com.sstek.javca.auth.domain.usecase.LogInWithEmailAndPasswordUseCase
 import junit.framework.TestCase.assertNull
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.mock
 

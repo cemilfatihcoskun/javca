@@ -2,14 +2,7 @@ package com.sstek.javca.framework
 
 import android.content.Context
 import android.util.Log
-import com.sstek.javca.Config
-import com.sstek.javca.domain.model.IceCandidateData
-import com.sstek.javca.domain.model.SdpOffer
-import com.sstek.javca.domain.repository.SignalingRepository
-import com.sstek.javca.domain.usecase.ObserveRemoteIceUseCase
-import com.sstek.javca.domain.usecase.ObserveRemoteSdpUseCase
-import com.sstek.javca.domain.usecase.SendIceCandidateUseCase
-import com.sstek.javca.domain.usecase.SendSdpUseCase
+import com.sstek.javca.core.config.Config
 import org.webrtc.AudioTrack
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraVideoCapturer
@@ -273,8 +266,27 @@ class WebRtcManager(
         return false
     }
 
+    fun getVideoStatus(): Boolean {
+        localVideoTrack?.let {
+            return it.enabled()
+        }
+        return false
+    }
+
     fun switchCamera() {
         videoCapturer?.switchCamera(null)
+    }
+
+    fun startCamera() {
+        localVideoTrack?.let {
+            it.setEnabled(true)
+        }
+    }
+
+    fun stopCamera() {
+        localVideoTrack?.let {
+            it.setEnabled(false)
+        }
     }
 
     fun swapSurfaceViewRenderers() {
