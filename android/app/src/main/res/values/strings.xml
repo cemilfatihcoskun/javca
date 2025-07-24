@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">VCA</string>
+    <string name="app_title">VCA ya hoşgeldiniz</string>
+    <string name="login_title">VCA yı kullanabilmek için giriş yapmanız gerekmektedir.</string>
+
+    <string name="usernameTextView">Kullanıcı Adınız</string>
+    <string name="emailTextView">E-Posta Adresiniz</string>
+    <string name="passwordTextView">Şifreniz</string>
+    <string name="registerButton">Kayıt Ol</string>
+    <string name="loginButton">Giriş Yap</string>
+    <string name="registerPageButton">Kayıt Ekranına Git</string>
+    <string name="loginPageButton">Giriş Ekranına Git</string>
+
+    <string name="logOutButton">Çıkış</string>
+    <string name="callButton">Ara\n</string>
+    <string name="removeButton">Kaldır\n</string>
+    <string name="nobody">Meçhul\n</string>
+    <string name="permissionDeniedErrorTitle">İzin Hatası\n</string>
+    <string name="permissionDeniedErrorBody">Gerekli izinler verilmediği için program kapatılıyor.</string>
+    <string name="itemUserUsernameTextView">Kullanıcı Adı</string>
+    <string name="itemUserCallButton">Ara</string>
+    <string name="itemUserToggleFavoriteOn">F Ekle</string>
+    <string name="itemUserToggleFavoriteOff">F Kaldır</string>
+    <string name="welcomeTextView">Hoşgeldiniz</string>
+
+
+</resources>
