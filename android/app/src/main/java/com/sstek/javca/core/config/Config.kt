@@ -7,13 +7,6 @@ package com.sstek.javca.core.config
 // sudo ufw allow <PORT> tüm portlar girilerek
 // güvenlik duvarından dolayı ulaşamama problemi çözülmeli
 object Config {
-    // Ofis
-    //val FIREBASE_IP = "192.168.1.53"
-
-    // Ev
-    //val FIREBASE_IP = "192.168.0.24"
-
-    // Yurt
     val FIREBASE_HOST_IP = "192.168.1.53"
 
     val FIREBASE_AUTHENTICATION_PORT = 9099

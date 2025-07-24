@@ -189,7 +189,7 @@ class CallListenerService : Service() {
                 channelName,
                 NotificationManager.IMPORTANCE_HIGH
             )
-            channel.lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC  // kilit ekranı görünürlüğü
+            channel.lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             manager.createNotificationChannel(channel)
         }
 
@@ -209,7 +209,7 @@ class CallListenerService : Service() {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_CALL)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setFullScreenIntent(fullScreenPendingIntent, true)
+            //.setFullScreenIntent(fullScreenPendingIntent, true)
             .addAction(R.drawable.ic_reject, "Reddet", declinePendingIntent)
             .addAction(R.drawable.ic_accept, "Cevapla", answerPendingIntent)
             .setAutoCancel(true)

@@ -50,6 +50,19 @@
             -->
 
             <ImageView
+                android:id="@+id/toggleMicrophoneButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/circle_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="12dp"
+                app:backgroundTint="@color/cardview_dark_background"
+                app:srcCompat="@drawable/ic_baseline_mic_24"
+                android:visibility="visible" />
+
+            <ImageView
                 android:id="@+id/toggleVideoButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,7 +72,8 @@
                 android:focusable="true"
                 android:padding="12dp"
                 app:backgroundTint="@color/cardview_dark_background"
-                app:srcCompat="@drawable/ic_baseline_videocam_24" />
+                app:srcCompat="@drawable/ic_baseline_videocam_24"
+                android:visibility="visible" />
 
             <ImageView
                 android:id="@+id/endCallButton"
@@ -71,7 +85,8 @@
                 android:focusable="true"
                 android:padding="12dp"
                 app:backgroundTint="@android:color/holo_red_dark"
-                app:srcCompat="@drawable/ic_baseline_call_end_24" />
+                app:srcCompat="@drawable/ic_baseline_call_end_24"
+                android:visibility="visible" />
 
             <ImageView
                 android:id="@+id/switchCameraButton"
@@ -83,7 +98,31 @@
                 android:focusable="true"
                 android:padding="12dp"
                 app:backgroundTint="@color/cardview_dark_background"
-                app:srcCompat="@drawable/ic_baseline_cameraswitch_24" />
+                app:srcCompat="@drawable/ic_baseline_cameraswitch_24"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/rejectCallButton"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_margin="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="16dp"
+                app:srcCompat="@drawable/reject_call"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/acceptCallButton"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_margin="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="16dp"
+                app:backgroundTint="@color/cardview_dark_background"
+                app:srcCompat="@drawable/accept_call"
+                android:visibility="gone" />
 
         </LinearLayout>
 

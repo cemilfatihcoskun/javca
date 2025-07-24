@@ -247,7 +247,7 @@ class WebRtcManager(
         return null
     }
 
-    fun toggleAudio(): Boolean {
+    fun toggleMicrophone(): Boolean {
         localAudioTrack?.let {
             val reverse = !it.enabled()
             it.setEnabled(reverse)
@@ -257,7 +257,6 @@ class WebRtcManager(
     }
 
     fun toggleVideo(): Boolean {
-        toggleAudio()
         localVideoTrack?.let {
             val reverse = !it.enabled()
             it.setEnabled(reverse)

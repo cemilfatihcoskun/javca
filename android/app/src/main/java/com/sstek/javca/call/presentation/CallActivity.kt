@@ -30,9 +30,9 @@ class CallActivity : AppCompatActivity() {
         // TODO(Deprecated android in daha ileri seviyeleri için bunu güncelle)
         window.addFlags(
             android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-            android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-            android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
-            android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                    android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                    android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+                    android.view.WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
         )
 
         binding = ActivityCallBinding.inflate(layoutInflater)
@@ -103,10 +103,15 @@ class CallActivity : AppCompatActivity() {
             }
         }
 
-        /*
-        binding.toggleAudioButton.setOnClickListener {
+
+        binding.toggleMicrophoneButton.setOnClickListener {
+            val enabled = viewModel.toggleMicrophone()
+            if (enabled) {
+                binding.toggleMicrophoneButton.setImageResource(R.drawable.ic_baseline_mic_24)
+            } else {
+                binding.toggleMicrophoneButton.setImageResource(R.drawable.ic_baseline_mic_off_24)
+            }
         }
-         */
 
         binding.toggleVideoButton.setOnClickListener {
             val enabled = viewModel.toggleVideo()

@@ -136,8 +136,16 @@ class CallViewModel @Inject constructor(
         }
     }
 
-    fun toggleAudio(): Boolean {
-        return webRtcManager.toggleAudio()
+    fun acceptCall(callId: String) {
+        Log.d("CallViewModel", "acceptCall() called with callId: $callId")
+        createAnswer()
+        viewModelScope.launch {
+            updateCallStatusUseCase(callId, CallStatus.ACCEPTED)
+        }
+    }
+
+    fun toggleMicrophone(): Boolean {
+        return webRtcManager.toggleMicrophone()
     }
 
     fun toggleVideo(): Boolean {
