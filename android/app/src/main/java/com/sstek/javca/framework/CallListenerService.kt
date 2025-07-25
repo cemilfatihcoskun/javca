@@ -89,7 +89,8 @@ class CallListenerService : Service() {
 
                 if (callRequest.status == CallStatus.ACCEPTED ||
                     callRequest.status == CallStatus.REJECTED ||
-                    callRequest.status == CallStatus.TIMEOUT) {
+                    callRequest.status == CallStatus.TIMEOUT ||
+                    callRequest.status == CallStatus.ENDED) {
 
                     stopRingtone()
                     cancelNotification()
@@ -279,10 +280,11 @@ class CallListenerService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        stopRingtone()
-        cancelNotification()
         currentUser?.let {
             callObserverRepository.removeListener(it.uid)
         }
+
+        stopRingtone()
+        cancelNotification()
     }
 }

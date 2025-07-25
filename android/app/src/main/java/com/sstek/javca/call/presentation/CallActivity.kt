@@ -137,8 +137,9 @@ class CallActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        //Log.d("CallActivity", "onDestroy()")
+        Log.d("CallActivity", "onDestroy()")
         callId?.let {
+            Log.d("CallActivity", "hey $callId")
             viewModel.endCall(it)
         }
         super.onDestroy()

@@ -18,6 +18,7 @@ import com.sstek.javca.webrtc_signalling.domain.usecase.SendSdpUseCase
 import com.sstek.javca.call.domain.usecase.UpdateCallRequestUseCase
 import com.sstek.javca.framework.WebRtcManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
@@ -121,7 +122,8 @@ class CallViewModel @Inject constructor(
 
     fun endCall(callId: String) {
         cleanWebRtc()
-        viewModelScope.launch {
+        GlobalScope.launch {
+            Log.d("CallViewModel", "heyttor")
             updateCallStatusUseCase(callId, CallStatus.ENDED)
         }
     }

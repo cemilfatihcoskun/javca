@@ -86,7 +86,6 @@ class MainViewModel @Inject constructor(
     fun toggleFavorite(userIdToToggle: String) {
         toggleFavoriteLocally(userIdToToggle)
         viewModelScope.launch(Dispatchers.IO) {
-
             toggleFavoriteRemotely(userIdToToggle)
         }
     }
