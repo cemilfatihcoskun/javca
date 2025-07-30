@@ -22,4 +22,6 @@ object UseCaseModule {
 
     @Provides
     fun provideReloadAuthUseCase(authRepository: AuthRepository): ReloadAuthUseCase = ReloadAuthUseCase(authRepository)
+
+
 }

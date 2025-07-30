@@ -91,6 +91,44 @@ exports.checkCallTimeout = functions.database
 
     return null;
   });
+  
+// Geçmişteki bir sıkıntıdan dolayı (isteği atıp, firebase i kapatıp, firebase i açtığımızda) üstteki fonksiyon çalışmıyor o yüzden
+// firebase başlatıldığında bir kereliğine mahsus tüm aramalar kontrol edilip timeout yapılıyor. İleride belki son 1 hafta, ay alınabilir.
+const cleanupPendingCallsOnce = async () => {
+  try {
+    const snapshot = await admin.database().ref("/calls").once("value");
+
+    if (!snapshot.exists()) {
+      console.log("No calls found.");
+      return;
+    }
+
+    const updates = {};
+    let updatedCount = 0;
+
+    snapshot.forEach(child => {
+      const callId = child.key;
+      const data = child.val();
+
+      if (data.status === "PENDING") {
+        console.log(`Marking call ${callId} as TIMEOUT`);
+        updates[`/calls/${callId}/status`] = "TIMEOUT";
+        updatedCount++;
+      }
+    });
+
+    if (updatedCount > 0) {
+      await admin.database().ref().update(updates);
+    }
+
+    console.log(`Cleanup completed. ${updatedCount} calls updated.`);
+  } catch (error) {
+    console.error("Cleanup failed:", error);
+  }
+};
+
+
+
 
 
 // Çağrı sonuç oluşturduğunda TIMEOUT, ENDED, REJECTED çağrıyla ilgili webrtc tablosu, eğer varsa, siliniyor
@@ -154,4 +192,7 @@ exports.addUserToDatabase = functions.auth.user().onCreate(async (user) => {
 });
 */
 
+
+// Cagrilan fonksiyonlar
+cleanupPendingCallsOnce();
 

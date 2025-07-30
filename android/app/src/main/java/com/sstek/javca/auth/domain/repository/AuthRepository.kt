@@ -10,4 +10,6 @@ interface AuthRepository {
     suspend fun reloadAuth(): User?
     suspend fun logOut()
 
+    fun setupPresence()
+
 }

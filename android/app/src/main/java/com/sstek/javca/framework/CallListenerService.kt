@@ -13,16 +13,18 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.sstek.javca.R
-import com.sstek.javca.call.domain.entity.CallRequest
+import com.sstek.javca.call.domain.entity.Call
 import com.sstek.javca.call.domain.entity.CallStatus
 import com.sstek.javca.user.domain.entity.User
 import com.sstek.javca.auth.domain.repository.AuthRepository
 import com.sstek.javca.call.domain.repository.CallObserverRepository
 import com.sstek.javca.call.domain.repository.CallRepository
 import com.sstek.javca.auth.domain.usecase.GetCurrentUserUseCase
+import com.sstek.javca.call.domain.usecase.SendCallRequestUseCase
 import com.sstek.javca.user.domain.usecase.GetUserByIdUseCase
 import com.sstek.javca.call.domain.usecase.UpdateCallRequestUseCase
 import com.sstek.javca.call.presentation.CallActivity
+import com.sstek.javca.user.domain.usecase.MakeOfflineUserUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -53,6 +55,12 @@ class CallListenerService : Service() {
     @Inject
     lateinit var getCurrentUserUseCase: GetCurrentUserUseCase
 
+    @Inject
+    lateinit var sendCallRequestUseCase: SendCallRequestUseCase
+
+    @Inject
+    lateinit var makeOfflineUserUseCase: MakeOfflineUserUseCase
+
     private var currentUser: User? = null
     private var currentCallId: String? = null
     private var ringtone: Ringtone? = null
@@ -74,7 +82,7 @@ class CallListenerService : Service() {
                 return@launch
             }
 
-            Log.d("CallListenerService", "onCreate() userId = ${currentUser?.uid}")
+            //Log.d("CallListenerService", "onCreate() userId = ${currentUser?.uid}")
 
             callObserverRepository.observeIncomingCalls(currentUser!!.uid) { callId, callRequest ->
                 if (callRequest.status == CallStatus.PENDING && callRequest.callerId != currentUser!!.uid && currentCallId != callId) {
@@ -117,24 +125,23 @@ class CallListenerService : Service() {
         }
     }
 
-    private fun showTimeoutNotification(callRequest: CallRequest) {
+    @SuppressLint("LaunchActivityFromNotification")
+    private fun showTimeoutNotification(call: Call) {
         val channelId = "call_channel"
         val channelName = "Call Notifications"
 
         CoroutineScope(Dispatchers.IO).launch {
-            val callerUser = getUserByIdUseCase(callRequest.callerId)
+            val callerUser = getUserByIdUseCase(call.callerId)
             val caller = callerUser?.username ?: "Bilinmeyen"
-            val datetime = getDateTimeStr(callRequest.timestamp)
+            val datetime = getDateTimeStr(call.timestamp)
             val message = "$caller sizi $datetime tarihinde aradı. Aramak için tıklayınız."
 
             val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-            val tapIntent = Intent(this@CallListenerService, CallActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                putExtra("callId", true)
-                putExtra("isCaller", true)
+            val tapIntent = Intent(this@CallListenerService, CallTapReceiver::class.java).apply {
+                putExtra("callId", call.callerId)
             }
-            val tapPendingIntent = PendingIntent.getActivity(
+            val tapPendingIntent = PendingIntent.getBroadcast(
                 this@CallListenerService, 0, tapIntent, PendingIntent.FLAG_IMMUTABLE
             )
 
@@ -281,6 +288,11 @@ class CallListenerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         currentUser?.let {
+            GlobalScope.launch {
+                makeOfflineUserUseCase(it.uid)
+                Log.d("CallListenerService", "heyya")
+            }
+
             callObserverRepository.removeListener(it.uid)
         }
 

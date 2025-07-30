@@ -5,6 +5,8 @@ import com.sstek.javca.call.application.repository.FirebaseCallObserverRepositor
 import com.sstek.javca.call.application.repository.FirebaseCallRepository
 import com.sstek.javca.call.domain.repository.CallObserverRepository
 import com.sstek.javca.call.domain.repository.CallRepository
+import com.sstek.javca.call_history.application.repository.FirebaseCallHistoryRepositoryRepository
+import com.sstek.javca.call_history.domain.repository.CallHistoryRepository
 import com.sstek.javca.user.application.repository.FirebaseUserRepository
 import com.sstek.javca.user.domain.repository.UserRepository
 import com.sstek.javca.webrtc_signalling.application.repository.FirebaseSignalingRepository
@@ -38,4 +40,9 @@ object ApplicationModule {
     @Singleton
     fun provideSignalingRepository(db: FirebaseDatabase): SignalingRepository =
         FirebaseSignalingRepository(db)
+
+    @Provides
+    @Singleton
+    fun provideCallHistoryRepository(db: FirebaseDatabase): CallHistoryRepository =
+        FirebaseCallHistoryRepositoryRepository(db)
 }

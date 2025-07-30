@@ -7,4 +7,5 @@ interface UserRepository {
     suspend fun getUserById(uid: String): User?
     suspend fun addFavoriteUser(currentUserId: String, favoriteUserId: String)
     suspend fun removeFavoriteUser(currentUserId: String, favoriteUserId: String)
+    suspend fun makeOffline(currentUserId: String)
 }

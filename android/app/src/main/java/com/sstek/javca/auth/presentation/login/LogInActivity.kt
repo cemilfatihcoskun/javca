@@ -1,7 +1,6 @@
 package com.sstek.javca.auth.presentation.login
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -9,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 import com.sstek.javca.databinding.ActivityLoginBinding
-import androidx.lifecycle.Observer
 import com.sstek.javca.main.presentation.MainActivity
 import com.sstek.javca.auth.presentation.register.RegisterActivity
 
@@ -31,7 +29,7 @@ class LogInActivity : AppCompatActivity() {
 
         binding.registerPageButton.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
             finish()
         }
@@ -45,7 +43,7 @@ class LogInActivity : AppCompatActivity() {
         viewModel.loginSuccess.observe(this) { success ->
             if (success == true) {
                 val intent = Intent(this, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
                 finish()
             }

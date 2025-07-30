@@ -6,7 +6,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.sstek.javca.call.domain.entity.CallRequest
+import com.sstek.javca.call.domain.entity.Call
 import com.sstek.javca.call.domain.repository.CallObserverRepository
 import javax.inject.Inject
 
@@ -20,9 +20,9 @@ class FirebaseCallObserverRepository @Inject constructor(
 
     override fun observeIncomingCalls(
         userId: String,
-        onCallReceived: (callId: String, callRequest: CallRequest) -> Unit
+        onCallReceived: (callId: String, call: Call) -> Unit
     ) {
-        Log.d("FirebaseCallObRepo", "$userId")
+        //Log.d("FirebaseCallObRepo", "userId = $userId")
         val userCallsRef = database.getReference("userCalls/$userId")
 
         if (userCallListeners.containsKey(userId)) return
@@ -56,12 +56,12 @@ class FirebaseCallObserverRepository @Inject constructor(
 
     override fun listenToCallDetails(
         callId: String,
-        onCallReceived: (callId: String, callRequest: CallRequest) -> Unit
+        onCallReceived: (callId: String, call: Call) -> Unit
     ) {
         val callRef = database.getReference("calls/$callId")
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val call = snapshot.getValue(CallRequest::class.java) ?: return
+                val call = snapshot.getValue(Call::class.java) ?: return
                 onCallReceived(callId, call)
             }
 

@@ -1,98 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/textViewTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="@string/login_title" />
+    android:fillViewport="true"
+    android:padding="24dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/register_title"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:gravity="center"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Kullanıcı Adı -->
         <TextView
             android:id="@+id/usernameTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/usernameTextView" />
+            android:text="@string/usernameTextView"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="4dp" />
 
         <EditText
             android:id="@+id/usernameEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="text" />
-    </LinearLayout>
+            android:layout_height="48dp"
+            android:background="@android:drawable/edit_text"
+            android:padding="12dp"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="16dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-
+        <!-- Email -->
         <TextView
             android:id="@+id/emailTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/emailTextView" />
+            android:text="@string/emailTextView"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="4dp" />
 
         <EditText
             android:id="@+id/emailEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="textEmailAddress" />
+            android:layout_height="48dp"
+            android:background="@android:drawable/edit_text"
+            android:padding="12dp"
+            android:inputType="textEmailAddress"
+            android:layout_marginBottom="16dp" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-
+        <!-- Şifre -->
         <TextView
             android:id="@+id/passwordTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/passwordTextView" />
+            android:text="@string/passwordTextView"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="4dp" />
 
         <EditText
             android:id="@+id/passwordEditText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10"
-            android:inputType="text|textPassword" />
+            android:layout_height="48dp"
+            android:background="@android:drawable/edit_text"
+            android:padding="12dp"
+            android:inputType="textPassword"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Kayıt Butonu -->
+        <Button
+            android:id="@+id/registerButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/registerButton"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:backgroundTint="@color/blue_700"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Giriş Sayfası Butonu -->
+        <Button
+            android:id="@+id/loginPageButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="@string/loginPageButton"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:backgroundTint="@android:color/darker_gray"
+            android:textColor="@android:color/white" />
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/registerButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="@string/registerButton" />
-
-    <Button
-        android:id="@+id/loginPageButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="@string/loginPageButton" />
-
-</LinearLayout>
+</ScrollView>

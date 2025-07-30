@@ -2,7 +2,7 @@ package com.sstek.javca.call.application.repository
 
 import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
-import com.sstek.javca.call.domain.entity.CallRequest
+import com.sstek.javca.call.domain.entity.Call
 import com.sstek.javca.call.domain.entity.CallStatus
 import com.sstek.javca.call.domain.repository.CallRepository
 import kotlinx.coroutines.tasks.await
@@ -13,15 +13,15 @@ class FirebaseCallRepository @Inject constructor(
 ) : CallRepository {
 
     // TODO(Edit callstatuses')
-    override suspend fun sendCallRequest(callRequest: CallRequest): Pair<String?, CallStatus> {
+    override suspend fun sendCallRequest(call: Call): Pair<String?, CallStatus> {
         return try {
             val callRef = database.getReference("calls").push()
             val callId = callRef.key
-            val callData = callRequest.copy()
+            val callData = call.copy()
 
             callRef.setValue(callData).await()
-            database.getReference("userCalls/${callRequest.callerId}/$callId").setValue(true).await()
-            database.getReference("userCalls/${callRequest.calleeId}/$callId").setValue(true).await()
+            database.getReference("userCalls/${call.callerId}/$callId").setValue(true).await()
+            database.getReference("userCalls/${call.calleeId}/$callId").setValue(true).await()
 
 
             val statusSnapshot = callRef.child("status").get().await()

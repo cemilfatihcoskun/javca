@@ -1,6 +1,6 @@
 package com.sstek.javca.call.domain.entity
 
-data class CallRequest(
+data class Call(
     val callerId: String = "",
     val calleeId: String = "",
     val timestamp: Long = 0,

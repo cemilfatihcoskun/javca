@@ -10,13 +10,13 @@ import com.sstek.javca.user.domain.entity.User
 import android.R
 import android.util.Log
 
-class UserAdapter(
+class PeopleAdapter(
     private var users: List<User>,
     var currentUser: User,
     private val onItemClick: (User) -> Unit,
     private val onCallClick: (User) -> Unit,
     private val onFavoriteToggle: (User) -> Unit
-) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
+) : RecyclerView.Adapter<PeopleAdapter.UserViewHolder>() {
 
     private val filteredUsers = mutableListOf<User>()
 
@@ -46,6 +46,17 @@ class UserAdapter(
                 // currentUser dışarıda güncellendiğinde adaptere yeni currentUser gelmeli
                 // ve adapter dışardan updateCurrentUser fonksiyonuyla bilgilendirilmeli
             }
+
+            /* TODO(belki sonra)
+            val isOnline = user.status == "online"
+            binding.statusIndicator.setImageResource(
+                if (isOnline) {
+                    com.sstek.javca.R.drawable.online_indicator
+                } else {
+                    com.sstek.javca.R.drawable.offline_indicator
+                }
+            )
+             */
         }
     }
 
@@ -84,22 +95,22 @@ class UserAdapter(
 
     fun filter(query: String) {
         val lowerQuery = query.lowercase()
-        filteredUsers.clear()
         val filteredList = if (lowerQuery.isEmpty()) {
             users
         } else {
             users.filter { it.username.lowercase().contains(lowerQuery) }
         }
 
-        // Filtrelenmiş listeyi favorilere göre sıralayalım
         val favs = currentUser.favorites.keys
         val sorted = filteredList.sortedWith(
             compareByDescending<User> { favs.contains(it.uid) }
                 .thenBy { it.username }
         )
 
+        filteredUsers.clear()
         filteredUsers.addAll(sorted)
         notifyDataSetChanged()
     }
+
 }
 

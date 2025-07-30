@@ -62,4 +62,11 @@ class FirebaseUserRepository @Inject constructor(
             .child(favoriteUserId)
             .removeValue()
     }
+
+    override suspend fun makeOffline(currentUserId: String) {
+        database.getReference("users")
+            .child(currentUserId)
+            .child("status")
+            .setValue("offline")
+    }
 }

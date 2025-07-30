@@ -41,7 +41,8 @@ class WebRtcManager(
     private var isSurfacesSwapped: Boolean = false
     private var isClosed: Boolean = false
 
-
+    private val VIDEO_TRACK_CHANNEL = "100"
+    private val AUDIO_TRACK_CHANNEL = "101"
 
     private fun initSurfaceView(view: SurfaceViewRenderer, eglContext: EglBase.Context) {
         view.init(eglContext, null)
@@ -155,8 +156,8 @@ class WebRtcManager(
         )
         videoCapturer?.startCapture(Config.CAMERA_WIDTH, Config.CAMERA_HEIGHT, Config.CAMERA_FPS)
 
-        localVideoTrack = peerConnectionFactory.createVideoTrack("100", videoSource)
-        localAudioTrack = peerConnectionFactory.createAudioTrack("101", peerConnectionFactory.createAudioSource(MediaConstraints()))
+        localVideoTrack = peerConnectionFactory.createVideoTrack(VIDEO_TRACK_CHANNEL, videoSource)
+        localAudioTrack = peerConnectionFactory.createAudioTrack(AUDIO_TRACK_CHANNEL, peerConnectionFactory.createAudioSource(MediaConstraints()))
 
         peerConnection?.addTrack(localVideoTrack, listOf("stream1"))
         peerConnection?.addTrack(localAudioTrack, listOf("stream1"))

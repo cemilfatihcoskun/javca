@@ -1,0 +1,50 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="12dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/callStatusIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/callHistoryCallButton"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_accept"
+        android:contentDescription="Call user"
+        app:tint="@color/blue_700"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/callWithText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Call with userId"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/callStatusIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/callButton"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <TextView
+        android:id="@+id/callTimeText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Today, 12:35 PM"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/callWithText"
+        app:layout_constraintStart_toStartOf="@id/callWithText"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

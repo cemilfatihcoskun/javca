@@ -122,9 +122,12 @@ class CallViewModel @Inject constructor(
 
     fun endCall(callId: String) {
         cleanWebRtc()
+        changeCallStatus(callId, CallStatus.ENDED)
+    }
+
+    fun changeCallStatus(callId: String, callStatus: CallStatus) {
         GlobalScope.launch {
-            Log.d("CallViewModel", "heyttor")
-            updateCallStatusUseCase(callId, CallStatus.ENDED)
+            updateCallStatusUseCase(callId, callStatus)
         }
     }
 

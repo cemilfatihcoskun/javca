@@ -31,7 +31,7 @@ class RegisterActivity : AppCompatActivity() {
 
         binding.loginPageButton.setOnClickListener {
             val intent = Intent(this, LogInActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
             finish()
         }
@@ -45,7 +45,7 @@ class RegisterActivity : AppCompatActivity() {
         viewModel.registerSuccess.observe(this) { success ->
             if (success == true) {
                 val intent = Intent(this, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
                 finish()
             }

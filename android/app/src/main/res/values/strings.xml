@@ -1,11 +1,12 @@
 <resources>
     <string name="app_name">VCA</string>
     <string name="app_title">VCA ya hoşgeldiniz</string>
-    <string name="login_title">VCA yı kullanabilmek için giriş yapmanız gerekmektedir.</string>
+    <string name="login_title">Giriş Yap</string>
+    <string name="register_title">Kayıt Ol</string>
 
-    <string name="usernameTextView">Kullanıcı Adınız</string>
-    <string name="emailTextView">E-Posta Adresiniz</string>
-    <string name="passwordTextView">Şifreniz</string>
+    <string name="usernameTextView">Ad - Soyad</string>
+    <string name="emailTextView">E-Posta</string>
+    <string name="passwordTextView">Şifre</string>
     <string name="registerButton">Kayıt Ol</string>
     <string name="loginButton">Giriş Yap</string>
     <string name="registerPageButton">Kayıt Ekranına Git</string>
@@ -14,7 +15,7 @@
     <string name="logOutButton">Çıkış</string>
     <string name="callButton">Ara\n</string>
     <string name="removeButton">Kaldır\n</string>
-    <string name="nobody">Meçhul\n</string>
+    <string name="nobody">Anonim</string>
     <string name="permissionDeniedErrorTitle">İzin Hatası\n</string>
     <string name="permissionDeniedErrorBody">Gerekli izinler verilmediği için program kapatılıyor.</string>
     <string name="itemUserUsernameTextView">Kullanıcı Adı</string>
@@ -22,6 +23,11 @@
     <string name="itemUserToggleFavoriteOn">F Ekle</string>
     <string name="itemUserToggleFavoriteOff">F Kaldır</string>
     <string name="welcomeTextView">Hoşgeldiniz</string>
+    <string name="no_internet">İnternet bağlantısı yok\n</string>
+    <string name="yesterday">Dün</string>
+    <string name="today">Bugün</string>
+    <string name="call_history">Arama Geçmişi</string>
+    <string name="contacts">Kişiler</string>
 
 
 </resources>

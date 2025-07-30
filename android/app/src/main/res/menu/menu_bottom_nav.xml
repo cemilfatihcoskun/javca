@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_users"
+        android:title="@string/contacts"
+        android:icon="@drawable/contacts" />
+    <item
+        android:id="@+id/nav_history"
+        android:title="@string/call_history"
+        android:icon="@drawable/call_history" />
+</menu>
