@@ -1,5 +1,7 @@
-package com.sstek.javca.connection.domain.repository
+package com.sstek.javca.server_connection.domain.repository
 
-interface ConnectionRepository {
+interface ServerConnectionRepository {
     fun observeConnectionStatus(callback: (Boolean) -> Unit)
+
+    suspend fun isServerConnected(): Boolean
 }

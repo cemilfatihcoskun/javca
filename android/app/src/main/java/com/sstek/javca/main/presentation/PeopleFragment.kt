@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,9 +51,12 @@ class PeopleFragment : Fragment() {
                         users = emptyList(),
                         currentUser = it,
                         onItemClick = {},
-                        onCallClick = { selectedUser ->
+                        onCallClick = { selectedUser
+                            // TODO(Mesajlar diğer fragment a geçince geliyor)
                             if (!isInternetAvailable(requireContext())) {
-                                Toast.makeText(context, "İnternet bağlantısı yok, arama yapılamaz", Toast.LENGTH_SHORT).show()
+                                activity?.runOnUiThread {
+                                    Toast.makeText(requireContext(), "İnternet bağlantısı yok, arama yapılamaz", Toast.LENGTH_SHORT).show()
+                                }
                                 return@PeopleAdapter
                             }
 
@@ -63,18 +67,34 @@ class PeopleFragment : Fragment() {
                             }
                              */
 
-                            viewModel.startCall(
-                                currentUser.uid,
-                                selectedUser.uid,
-                                onCallStarted = { callId ->
-                                    val intent = Intent(requireContext(), CallActivity::class.java).apply {
-                                        putExtra("callId", callId)
-                                        putExtra("isCaller", true)
+                            viewModel.checkServerConnectionOnce { isConnected ->
+                                if (!isConnected) {
+                                    activity?.runOnUiThread {
+                                        Toast.makeText(requireContext(), "VCA sunucusuna bağlanılamadı, arama yapılamaz", Toast.LENGTH_SHORT).show()
                                     }
-                                    startActivity(intent)
+                                    return@checkServerConnectionOnce
                                 }
-                            )
 
+                                viewModel.startCall(
+                                    currentUser.uid,
+                                    selectedUser.uid,
+                                    onCallStarted = { callId ->
+                                        if (callId.isNullOrBlank()) {
+                                            activity?.runOnUiThread {
+                                                Toast.makeText(requireContext(), "Arama başlatılamadı.", Toast.LENGTH_SHORT).show()
+                                            }
+                                            return@startCall
+                                        }
+
+                                        val intent = Intent(requireContext(), CallActivity::class.java).apply {
+                                            putExtra("callId", callId)
+                                            putExtra("isCaller", true)
+                                        }
+                                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                        startActivity(intent)
+                                    }
+                                )
+                            }
                         },
                         onFavoriteToggle = { viewModel.toggleFavorite(it.uid) }
                     )
@@ -86,9 +106,13 @@ class PeopleFragment : Fragment() {
         }
 
         viewModel.userList.observe(viewLifecycleOwner) { users ->
-            val filteredUsers = users.filter { it.uid != viewModel.currentUser.value?.uid }
-            adapter?.updateUsers(filteredUsers)
+            val currentUserId = viewModel.currentUser.value?.uid
+            if (currentUserId != null) {
+                val filteredUsers = users.filter { it.uid != currentUserId }
+                adapter?.updateUsers(filteredUsers)
+            }
         }
+
 
         viewModel.loadUsers()
     }

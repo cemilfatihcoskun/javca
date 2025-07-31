@@ -3,6 +3,7 @@ package com.sstek.javca.call.presentation
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,7 @@ import com.sstek.javca.webrtc_signalling.domain.usecase.SendIceCandidateUseCase
 import com.sstek.javca.webrtc_signalling.domain.usecase.SendSdpUseCase
 import com.sstek.javca.call.domain.usecase.UpdateCallRequestUseCase
 import com.sstek.javca.framework.WebRtcManager
+import com.sstek.javca.server_connection.domain.usecase.ObserveServerConnectionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,7 +36,8 @@ class CallViewModel @Inject constructor(
     private val observeRemoteSdpUseCase: ObserveRemoteSdpUseCase,
     private val observeRemoteIceUseCase: ObserveRemoteIceUseCase,
     private val updateCallStatusUseCase: UpdateCallRequestUseCase,
-    private val observeCallRequestUseCase: ObserveCallRequestUseCase
+    private val observeCallRequestUseCase: ObserveCallRequestUseCase,
+    private val observeServerConnectionUseCase: ObserveServerConnectionUseCase
 ) : ViewModel() {
 
     private val _onRemoteSdp = MutableSharedFlow<SdpOffer>()
@@ -45,6 +48,7 @@ class CallViewModel @Inject constructor(
 
     private val _callStatus = MutableLiveData<CallStatus>()
     val callStatus: MutableLiveData<CallStatus> = _callStatus
+
 
     private lateinit var webRtcManager: WebRtcManager
 

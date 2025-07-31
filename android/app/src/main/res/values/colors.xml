@@ -9,4 +9,7 @@
     <color name="cyan_500">#00BCD4</color>
     <color name="cyan_700">#00838F</color>
     <color name="black">#000000</color>
+
+    <color name="green">#4CAF50</color>
+    <color name="red">#F44336</color>
 </resources>

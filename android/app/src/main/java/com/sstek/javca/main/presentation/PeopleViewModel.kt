@@ -13,6 +13,8 @@ import com.sstek.javca.auth.domain.usecase.GetCurrentUserUseCase
 import com.sstek.javca.auth.domain.usecase.LogOutUseCase
 import com.sstek.javca.auth.domain.usecase.ReloadAuthUseCase
 import com.sstek.javca.call.domain.usecase.SendCallRequestUseCase
+import com.sstek.javca.server_connection.domain.usecase.CheckServerConnectionUseCase
+import com.sstek.javca.server_connection.domain.usecase.ObserveServerConnectionUseCase
 import com.sstek.javca.user.domain.usecase.AddFavoriteUserUseCase
 import com.sstek.javca.user.domain.usecase.RemoveFavoriteUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +30,8 @@ class PeopleViewModel @Inject constructor(
     private val reloadAuthUseCase: ReloadAuthUseCase,
     private val getAllUsersUseCase: GetAllUsersUseCase,
     private val addFavoriteUserUseCase: AddFavoriteUserUseCase,
-    private val removeFavoriteUserUseCase: RemoveFavoriteUserUseCase
+    private val removeFavoriteUserUseCase: RemoveFavoriteUserUseCase,
+    private val checkServerConnectionUseCase: CheckServerConnectionUseCase
 ) : ViewModel() {
     private val _currentUser = MutableLiveData<User?>()
     val currentUser: LiveData<User?> = _currentUser
@@ -40,6 +43,13 @@ class PeopleViewModel @Inject constructor(
 
     init {
         loadCurrentUser()
+    }
+
+    fun checkServerConnectionOnce(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val isConnected = checkServerConnectionUseCase()
+            onResult(isConnected)
+        }
     }
 
     private fun loadCurrentUser() {
@@ -66,7 +76,7 @@ class PeopleViewModel @Inject constructor(
         }
     }
 
-    fun startCall(callerId: String, calleeId: String, onCallStarted: (String) -> Unit) {
+    fun startCall(callerId: String, calleeId: String, onCallStarted: (String?) -> Unit) {
         if (_currentUser.value == null) return
 
         // DONE TODO(Sunucu zamanını kullan)
@@ -79,7 +89,8 @@ class PeopleViewModel @Inject constructor(
 
         viewModelScope.launch {
             val (callId, status) = sendCallRequestUseCase(call)
-            onCallStarted(callId.toString())
+
+            onCallStarted(callId)
         }
     }
 

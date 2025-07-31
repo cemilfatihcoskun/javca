@@ -39,7 +39,8 @@
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
-            android:src="@android:drawable/btn_star_big_off" />
+            android:src="@drawable/star_empty"
+            android:tint="@color/blue_700" />
 
         <ImageButton
             android:id="@+id/callButton"
@@ -47,7 +48,7 @@
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
-            android:src="@android:drawable/stat_sys_phone_call"
+            android:src="@drawable/ic_accept"
             android:tint="?attr/colorPrimary" />
 
     </LinearLayout>

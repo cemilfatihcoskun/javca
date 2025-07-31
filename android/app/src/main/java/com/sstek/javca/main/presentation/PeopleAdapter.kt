@@ -35,9 +35,9 @@ class PeopleAdapter(
             val isFavorite = currentUser.favorites.containsKey(user.uid)
             binding.toggleFavoriteButton.setImageResource(
                 if (isFavorite) {
-                    R.drawable.btn_star_big_on
+                    com.sstek.javca.R.drawable.star_filled
                 } else {
-                    R.drawable.btn_star_big_off
+                    com.sstek.javca.R.drawable.star_empty
                 }
             )
 

@@ -12,6 +12,8 @@ import com.sstek.javca.call.domain.usecase.SendCallRequestUseCase
 import com.sstek.javca.call_history.domain.repository.ListenerHandle
 import com.sstek.javca.call_history.domain.usecase.GetCallHistoryUseCase
 import com.sstek.javca.call_history.domain.usecase.ObserveCallHistoryUseCase
+import com.sstek.javca.server_connection.domain.usecase.CheckServerConnectionUseCase
+import com.sstek.javca.server_connection.domain.usecase.ObserveServerConnectionUseCase
 import com.sstek.javca.user.domain.entity.User
 import com.sstek.javca.user.domain.usecase.GetAllUsersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +26,8 @@ class CallHistoryViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val getAllUsersUseCase: GetAllUsersUseCase,
     private val sendCallRequestUseCase: SendCallRequestUseCase,
-    private val observeCallHistoryUseCase: ObserveCallHistoryUseCase
+    private val observeCallHistoryUseCase: ObserveCallHistoryUseCase,
+    private val checkServerConnectionUseCase: CheckServerConnectionUseCase
 ) : ViewModel() {
 
     private val _callHistory = MutableLiveData<List<Call>>()
@@ -35,6 +38,13 @@ class CallHistoryViewModel @Inject constructor(
 
     private val _usersMap = MutableLiveData<Map<String, User>>()
     val usersMap: LiveData<Map<String, User>> = _usersMap
+
+    fun checkServerConnectionOnce(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val isConnected = checkServerConnectionUseCase()
+            onResult(isConnected)
+        }
+    }
 
     fun loadCallHistory(userId: String) {
         viewModelScope.launch {
@@ -64,7 +74,7 @@ class CallHistoryViewModel @Inject constructor(
         }
     }
 
-    fun startCall(callerId: String, calleeId: String, onCallStarted: (String) -> Unit) {
+    fun startCall(callerId: String, calleeId: String, onCallStarted: (String?) -> Unit) {
         if (_currentUser.value == null) return
 
         // DONE TODO(Sunucu zamanını kullan)
@@ -77,7 +87,7 @@ class CallHistoryViewModel @Inject constructor(
 
         viewModelScope.launch {
             val (callId, status) = sendCallRequestUseCase(call)
-            onCallStarted(callId.toString())
+            onCallStarted(callId)
         }
     }
 

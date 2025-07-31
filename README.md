@@ -15,6 +15,26 @@ erişilebilir olmalı. Varsayılanlar: 9099 (Auth), 9000 (Database)
 6. android/app/src/main/res/xml/network_security_config.xml e sunucudaki firebase hostunun IP numarası eklenir.
 7. android/app/src/main/java/com/sstek/javca/core/config/Config.kt dosyasına FIREBASE_HOST_IP = <Host IP numarası> olacak şekilde güncellenir.
 
+Not: Aramaların algılanabilmesi için şimdilik uygulamanın arka planda açık olması gerek. 
+Android in açık uygulamalar listesinde bu uygulama olmalı. Fakat önplanda farklı uygulamalar çalıştırılsa bile arama çalışıyor.
+
+# Görseller
+Kişiler
+![contacts](pictures/contacts.png)
+
+Arama Geçmişi
+![call_history](pictures/call_history.png)
+
+Çağrı Ekranı
+![call_screen](pictures/call_screen.png)
+
+Kayıt Ekranı
+![register](pictures/register.png)
+
+Giriş Ekranı
+![login](pictures/login.png)
+
+
 ## Özellikler
 * Giriş, kayıt sistemi
 * Favori ekleme, kişi arama

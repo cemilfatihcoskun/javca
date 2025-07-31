@@ -3,10 +3,10 @@ package com.sstek.javca.server_connection.domain.usecase
 import com.sstek.javca.server_connection.domain.repository.ServerConnectionRepository
 import javax.inject.Inject
 
-class ObserveServerConnectionUseCase @Inject constructor(
+class CheckServerConnectionUseCase @Inject constructor(
     private val repository: ServerConnectionRepository
 ) {
-    suspend operator fun invoke(callback: (Boolean) -> Unit) {
-        repository.observeConnectionStatus(callback)
+    suspend operator fun invoke(): Boolean {
+        return repository.isServerConnected()
     }
 }

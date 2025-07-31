@@ -58,8 +58,9 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="12dp"
-                app:backgroundTint="@color/cardview_dark_background"
-                app:srcCompat="@drawable/ic_baseline_mic_24"
+                android:backgroundTint="@color/blue_700"
+                app:tint="@color/white"
+                app:srcCompat="@drawable/microphone_enabled"
                 android:visibility="visible" />
 
             <ImageView
@@ -71,9 +72,10 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="12dp"
-                app:backgroundTint="@color/cardview_dark_background"
-                app:srcCompat="@drawable/ic_baseline_videocam_24"
-                android:visibility="visible" />
+                android:backgroundTint="@color/blue_700"
+                app:srcCompat="@drawable/camera_enabled"
+                android:visibility="visible"
+                app:tint="@color/white" />
 
             <ImageView
                 android:id="@+id/endCallButton"
@@ -85,7 +87,8 @@
                 android:focusable="true"
                 android:padding="12dp"
                 app:backgroundTint="@android:color/holo_red_dark"
-                app:srcCompat="@drawable/ic_baseline_call_end_24"
+                app:srcCompat="@drawable/ic_reject"
+                app:tint="@color/white"
                 android:visibility="visible" />
 
             <ImageView
@@ -97,8 +100,9 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="12dp"
-                app:backgroundTint="@color/cardview_dark_background"
-                app:srcCompat="@drawable/ic_baseline_cameraswitch_24"
+                android:backgroundTint="@color/blue_700"
+                app:srcCompat="@drawable/camera_switch"
+                app:tint="@color/white"
                 android:visibility="visible" />
 
             <ImageView

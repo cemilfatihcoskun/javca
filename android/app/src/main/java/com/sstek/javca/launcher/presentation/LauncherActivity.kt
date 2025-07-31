@@ -7,45 +7,24 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.sstek.javca.main.presentation.MainActivity
-import com.sstek.javca.auth.presentation.login.LogInActivity
-import com.google.firebase.auth.FirebaseAuth
 import com.permissionx.guolindev.PermissionX
-import com.sstek.javca.auth.domain.usecase.ReloadAuthUseCase
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import com.sstek.javca.R
+import com.sstek.javca.auth.presentation.login.LogInActivity
+import com.sstek.javca.main.presentation.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class LauncherActivity() : AppCompatActivity() {
+class LauncherActivity : AppCompatActivity() {
+
     private val viewModel: LauncherViewModel by viewModels()
-    private lateinit var textViewInternetStatus: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         checkPermissions()
-
-        if (isInternetAvailable()) {
-            proceed()
-        } else {
-            setContentView(R.layout.activity_launcher)
-            textViewInternetStatus = findViewById(R.id.textViewInternetStatus)
-            textViewInternetStatus.visibility = View.VISIBLE
-        }
-    }
-
-    private fun isInternetAvailable(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork ?: return false
-        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun checkPermissions() {
@@ -81,36 +60,45 @@ class LauncherActivity() : AppCompatActivity() {
                     "İptal"
                 )
             }
-            .request { allGranted, grantedList, deniedList ->
+            .request { allGranted, _, _ ->
                 if (!allGranted) {
                     showPermissionDeniedDialog()
+                } else {
+                    checkInternet()
                 }
             }
     }
 
-    private fun proceed() {
+    private fun checkInternet() {
+        if (!isInternetAvailable()) {
+            showNoInternetDialog()
+        } else {
+            checkAuth()
+        }
+    }
+
+    private fun checkAuth() {
         viewModel.reloadAuth(
-            onSuccess = {
-                navigateToMain()
-            },
-            onFailure = {
-                navigateToLogin()
-            }
+            onSuccess = { navigateToMain() },
+            onFailure = { navigateToLogin() }
         )
     }
 
     private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java)
-        //intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
     private fun navigateToLogin() {
-        val intent = Intent(this, LogInActivity::class.java)
-        //intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
+        startActivity(Intent(this, LogInActivity::class.java))
         finish()
+    }
+
+    private fun isInternetAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun showPermissionDeniedDialog() {
@@ -124,5 +112,14 @@ class LauncherActivity() : AppCompatActivity() {
             .show()
     }
 
+    private fun showNoInternetDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("İnternet Bağlantısı Yok")
+            .setMessage("Uygulamayı kullanabilmek için internet bağlantısı gereklidir.")
+            .setCancelable(false)
+            .setPositiveButton("Tamam") { _, _ ->
+                finish()
+            }
+            .show()
+    }
 }
-

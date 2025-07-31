@@ -24,6 +24,7 @@ import com.sstek.javca.call.domain.usecase.SendCallRequestUseCase
 import com.sstek.javca.user.domain.usecase.GetUserByIdUseCase
 import com.sstek.javca.call.domain.usecase.UpdateCallRequestUseCase
 import com.sstek.javca.call.presentation.CallActivity
+import com.sstek.javca.server_connection.domain.usecase.ObserveServerConnectionUseCase
 import com.sstek.javca.user.domain.usecase.MakeOfflineUserUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -61,6 +62,10 @@ class CallListenerService : Service() {
     @Inject
     lateinit var makeOfflineUserUseCase: MakeOfflineUserUseCase
 
+    @Inject
+    lateinit var observeServerConnectionUseCase: ObserveServerConnectionUseCase
+
+
     private var currentUser: User? = null
     private var currentCallId: String? = null
     private var ringtone: Ringtone? = null
@@ -81,6 +86,8 @@ class CallListenerService : Service() {
                 stopSelf()
                 return@launch
             }
+
+
 
             //Log.d("CallListenerService", "onCreate() userId = ${currentUser?.uid}")
 
@@ -113,6 +120,7 @@ class CallListenerService : Service() {
             }
         }
     }
+
 
     private fun getDateTimeStr(timestamps: Long): String {
         return try {
@@ -158,7 +166,7 @@ class CallListenerService : Service() {
             val builder = NotificationCompat.Builder(this@CallListenerService, channelId)
                 .setContentTitle("Gelen Arama")
                 .setContentText(message)
-                .setSmallIcon(R.drawable.apple_touch_icon)
+                .setSmallIcon(R.drawable.favicon_32x32)
                 .setContentIntent(tapPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
@@ -213,13 +221,13 @@ class CallListenerService : Service() {
         val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle("Gelen Arama")
             .setContentText(message)
-            .setSmallIcon(R.drawable.apple_touch_icon)
+            .setSmallIcon(R.drawable.favicon_32x32)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_CALL)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             //.setFullScreenIntent(fullScreenPendingIntent, true)
-            .addAction(R.drawable.ic_reject, "Reddet", declinePendingIntent)
-            .addAction(R.drawable.ic_accept, "Cevapla", answerPendingIntent)
+            .addAction(R.drawable.ic_stat_reject_call, "Reddet", declinePendingIntent)
+            .addAction(R.drawable.ic_stat_accept_call, "Cevapla", answerPendingIntent)
             .setAutoCancel(true)
 
         startForeground(PENDING_NOTIFICATION_ID, builder.build())
@@ -285,6 +293,8 @@ class CallListenerService : Service() {
         }
     }
 
+
+
     override fun onDestroy() {
         super.onDestroy()
         currentUser?.let {
@@ -299,4 +309,6 @@ class CallListenerService : Service() {
         stopRingtone()
         cancelNotification()
     }
+
+
 }

@@ -1,10 +1,14 @@
 package com.sstek.javca.call_history.presentation
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,11 +40,36 @@ class CallHistoryFragment : Fragment() {
             onCallButtonClick = { calleeId ->
                 val callerId = viewModel.currentUser.value?.uid ?: return@CallHistoryAdapter
                 viewModel.startCall(callerId, calleeId) { callId ->
-                    val intent = Intent(requireContext(), CallActivity::class.java).apply {
-                        putExtra("callId", callId)
-                        putExtra("isCaller", true)
+                    if (!isInternetAvailable(requireContext())) {
+                        activity?.runOnUiThread {
+                            Toast.makeText(requireContext(), "İnternet bağlantısı yok, arama yapılamaz", Toast.LENGTH_SHORT).show()
+                        }
+                        return@startCall
                     }
-                    startActivity(intent)
+
+                    if (callId.isNullOrBlank()) {
+                        activity?.runOnUiThread {
+                            Toast.makeText(requireContext(), "Arama başlatılamadı.", Toast.LENGTH_SHORT).show()
+                        }
+                        return@startCall
+                    }
+
+                    viewModel.checkServerConnectionOnce { isConnected ->
+                        if (!isConnected) {
+                            activity?.runOnUiThread {
+                                Toast.makeText(requireContext(), "VCA sunucusuna bağlanılamadı, arama yapılamaz", Toast.LENGTH_SHORT).show()
+                            }
+                            return@checkServerConnectionOnce
+                        }
+
+                        val intent = Intent(requireContext(), CallActivity::class.java).apply {
+                            putExtra("callId", callId)
+                            putExtra("isCaller", true)
+                        }
+
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                    }
                 }
             }
         )
@@ -78,6 +107,12 @@ class CallHistoryFragment : Fragment() {
     // TODO(lowercase yapılmalı mı gerçekten, düşünmeli)
     fun search(query: String) {
         adapter.filter(query.lowercase().trim())
+    }
+
+    private fun isInternetAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
 
 }

@@ -51,9 +51,16 @@ class CallActivity : AppCompatActivity() {
         val isCaller = intent.getBooleanExtra("isCaller", false)
         callId = intent.getStringExtra("callId")
 
-        if (callId == null) {
-            Log.d("CallActivity", "onCreate() callId cannot be null")
-            finish()
+
+        if (callId.isNullOrBlank()) {
+            Log.e("CallActivity", "callId null veya boş. Aktivite kapatılıyor.")
+            Snackbar.make(binding.root, "Arama bilgisi alınamadı.", Snackbar.LENGTH_LONG).show()
+
+            binding.root.postDelayed({
+                finish()
+            }, 1500)
+
+            return
         }
 
         viewModel.initWebRtcManager(callId.toString(), this, localRenderer, remoteRenderer)
@@ -124,18 +131,18 @@ class CallActivity : AppCompatActivity() {
         binding.toggleMicrophoneButton.setOnClickListener {
             val enabled = viewModel.toggleMicrophone()
             if (enabled) {
-                binding.toggleMicrophoneButton.setImageResource(R.drawable.ic_baseline_mic_24)
+                binding.toggleMicrophoneButton.setImageResource(R.drawable.microphone_enabled)
             } else {
-                binding.toggleMicrophoneButton.setImageResource(R.drawable.ic_baseline_mic_off_24)
+                binding.toggleMicrophoneButton.setImageResource(R.drawable.microphone_disabled)
             }
         }
 
         binding.toggleVideoButton.setOnClickListener {
             val enabled = viewModel.toggleVideo()
             if (enabled) {
-                binding.toggleVideoButton.setImageResource(R.drawable.ic_baseline_videocam_24)
+                binding.toggleVideoButton.setImageResource(R.drawable.camera_enabled)
             } else {
-                binding.toggleVideoButton.setImageResource(R.drawable.ic_baseline_videocam_off_24)
+                binding.toggleVideoButton.setImageResource(R.drawable.camera_disabled)
             }
         }
 
@@ -253,35 +260,5 @@ class CallActivity : AppCompatActivity() {
         */
     }
 
-    private fun makeLocalRendererDraggable(view: SurfaceViewRenderer) {
-        var dX = 0f
-        var dY = 0f
-
-        view.setOnTouchListener { v, event ->
-            val parent = v.parent as ViewGroup
-
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN -> {
-                    dX = v.x - event.rawX
-                    dY = v.y - event.rawY
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    var newX = event.rawX + dX
-                    var newY = event.rawY + dY
-
-                    // Ekran dışına taşmayı engelle
-                    val maxX = parent.width - v.width
-                    val maxY = parent.height - v.height
-
-                    newX = newX.coerceIn(0f, maxX.toFloat())
-                    newY = newY.coerceIn(0f, maxY.toFloat())
-
-                    v.x = newX
-                    v.y = newY
-                }
-            }
-            true
-        }
-    }
 
 }

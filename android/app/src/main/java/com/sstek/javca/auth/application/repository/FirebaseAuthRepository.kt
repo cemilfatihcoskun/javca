@@ -29,7 +29,7 @@ class FirebaseAuthRepository @Inject constructor(
         val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
         Log.d("FirebaseAuthRepository", "loginWithWemailAndPassword() user $email, logged in successfully.")
 
-        setupPresence()
+        //setupPresence()
 
         return getCurrentUser()
     }
@@ -61,7 +61,7 @@ class FirebaseAuthRepository @Inject constructor(
             userRef.setValue(user).await()
         }
 
-        setupPresence()
+        //setupPresence()
 
         return user
     }
@@ -85,7 +85,6 @@ class FirebaseAuthRepository @Inject constructor(
 
         return try {
             user.reload().await()
-            setupPresence()
 
             val userSnapshot = firebaseDatabase
                 .getReference("users")
@@ -93,14 +92,25 @@ class FirebaseAuthRepository @Inject constructor(
                 .get()
                 .await()
 
+            if (!userSnapshot.exists()) {
+                Log.d("FirebaseAuthRepository", "User data not found in database")
+                return null
+            }
+
             val userFromDb = userSnapshot.getValue(User::class.java)
 
-            userFromDb
+            if (userFromDb?.uid.isNullOrBlank() || userFromDb?.username.isNullOrBlank()) {
+                Log.d("FirebaseAuthRepository", "User data incomplete: $userFromDb")
+                return null
+            }
+
+            return userFromDb
         } catch (e: Exception) {
-            Log.d("FirebaseAuthRepository", "${e.message}")
+            Log.d("FirebaseAuthRepository", "reloadAuth error: ${e.message}")
             null
         }
     }
+
 
     override suspend fun logOut() {
         try {

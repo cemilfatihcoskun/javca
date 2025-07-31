@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.sstek.javca.R
 import com.sstek.javca.call.domain.entity.Call
@@ -49,15 +50,40 @@ class CallHistoryAdapter(
 
         holder.callTimeText.text = formatTimestamp(holder.itemView.context, call.timestamp)
 
-        val iconRes = when (call.status) {
-            CallStatus.ACCEPTED -> R.drawable.accept_call
-            CallStatus.REJECTED -> R.drawable.reject_call
-            CallStatus.TIMEOUT -> R.drawable.timeout
-            CallStatus.ENDED -> R.drawable.accept_call
-            CallStatus.PENDING -> R.drawable.call_history
+        val areYouTheCaller = call.callerId == currentUserId
+
+        var icon = R.drawable.timeout
+        if (areYouTheCaller) {
+            icon = R.drawable.call_outgoing
+        } else {
+            icon = R.drawable.call_incoming
         }
 
-        holder.callStatusIcon.setImageResource(iconRes)
+        var iconTintColor = R.color.black
+
+        when (call.status) {
+            CallStatus.ACCEPTED -> {
+                iconTintColor = R.color.green
+            }
+            CallStatus.REJECTED -> {
+                iconTintColor = R.color.red
+            }
+            CallStatus.TIMEOUT -> {
+                iconTintColor = R.color.red
+            }
+            CallStatus.ENDED -> {
+                iconTintColor = R.color.green
+            }
+            CallStatus.PENDING -> {
+                iconTintColor = R.color.black
+            }
+        }
+
+        holder.callStatusIcon.setImageResource(icon)
+        holder.callStatusIcon.setColorFilter(
+            ContextCompat.getColor(holder.itemView.context, iconTintColor),
+            android.graphics.PorterDuff.Mode.SRC_IN
+        )
 
         holder.callButton.setOnClickListener {
             onCallButtonClick(otherUserId)

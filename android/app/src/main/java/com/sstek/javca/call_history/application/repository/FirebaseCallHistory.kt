@@ -12,7 +12,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class FirebaseCallHistoryRepositoryRepository @Inject constructor(
+class FirebaseCallHistoryRepository @Inject constructor(
     private val firebaseDatabase: FirebaseDatabase
 ) : CallHistoryRepository {
 
