@@ -18,20 +18,20 @@ erişilebilir olmalı. Varsayılanlar: 9099 (Auth), 9000 (Database)
 Not: Aramaların algılanabilmesi için şimdilik uygulamanın arka planda açık olması gerek. 
 Android in açık uygulamalar listesinde bu uygulama olmalı. Fakat önplanda farklı uygulamalar çalıştırılsa bile arama çalışıyor.
 
-# Görseller
-Kişiler
+## Görseller
+### Kişiler
 ![contacts](pictures/contacts.png)
 
-Arama Geçmişi
+### Arama Geçmişi
 ![call_history](pictures/call_history.png)
 
-Çağrı Ekranı
+### Çağrı Ekranı
 ![call_screen](pictures/call_screen.png)
 
-Kayıt Ekranı
+### Kayıt Ekranı
 ![register](pictures/register.png)
 
-Giriş Ekranı
+### Giriş Ekranı
 ![login](pictures/login.png)
 
 
