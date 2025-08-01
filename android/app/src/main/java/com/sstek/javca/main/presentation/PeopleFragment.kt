@@ -51,7 +51,7 @@ class PeopleFragment : Fragment() {
                         users = emptyList(),
                         currentUser = it,
                         onItemClick = {},
-                        onCallClick = { selectedUser
+                        onCallClick = { selectedUser ->
                             // TODO(Mesajlar diğer fragment a geçince geliyor)
                             if (!isInternetAvailable(requireContext())) {
                                 activity?.runOnUiThread {
